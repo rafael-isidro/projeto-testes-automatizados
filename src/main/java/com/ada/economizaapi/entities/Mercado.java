@@ -19,13 +19,21 @@ public class Mercado {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
-    @ManyToOne
-    @JoinColumn(name = "localizacao_id")
-    private Localizacao localizacao;
-    @ToString.Exclude
-    @JsonIgnore
-    @OneToMany(mappedBy = "mercado")
-    private List<ProdutoPreco> produtoPrecos = new ArrayList<>();
+    private String localizacao;
+
+    @ManyToMany
+    @JoinTable(
+            name = "mercado_produto",
+            joinColumns = @JoinColumn(name = "mercado_id"),
+            inverseJoinColumns = @JoinColumn(name = "produto_id")
+    )
+    private List<Produto> produtos;
+
+    public Mercado(String nome, String localizacao) {
+        this.nome = nome;
+        this.localizacao = localizacao;
+        this.produtos = new ArrayList<>();
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -39,14 +47,4 @@ public class Mercado {
     public int hashCode() {
         return id != null ? id.hashCode() : 0;
     }
-
-    public ProdutoPreco getProdutoPreco(Produto produto) {
-        for (ProdutoPreco produtoPreco : produtoPrecos) {
-            if (produtoPreco.getProduto().equals(produto)) {
-                return produtoPreco;
-            }
-        }
-        return null;
-    }
 }
-

@@ -13,7 +13,7 @@ import java.util.stream.StreamSupport;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
-public abstract class ServicoAbstrato<E, ID, R extends JpaRepository<E, ID>> {
+public abstract class  ServicoAbstrato<E, ID, R extends JpaRepository<E, ID>> {
 
     private final R repository;
 
@@ -34,12 +34,6 @@ public abstract class ServicoAbstrato<E, ID, R extends JpaRepository<E, ID>> {
             throw new EntidadeJaExisteException();
         }
         return this.repository.save(entity);
-    }
-
-    public List<E> saveAll(Iterable<? extends E> entities) {
-        return StreamSupport.stream(entities.spliterator(), false)
-                .map(this::save)
-                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public Optional<E> findById(ID id) {

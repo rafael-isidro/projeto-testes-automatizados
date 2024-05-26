@@ -20,10 +20,6 @@ public class Localizacao {
     @NotBlank
     private String coordenadas;
 
-    public Localizacao(String coordenadas) {
-        this.coordenadas = coordenadas;
-    }
-  
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

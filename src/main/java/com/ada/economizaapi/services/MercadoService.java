@@ -1,48 +1,92 @@
 package com.ada.economizaapi.services;
 
 import com.ada.economizaapi.entities.Mercado;
+import com.ada.economizaapi.entities.Produto;
+import com.ada.economizaapi.entities.ProdutoPreco;
+import com.ada.economizaapi.exceptions.EntidadeJaExisteException;
 import com.ada.economizaapi.exceptions.EntidadeNaoExisteException;
-import com.ada.economizaapi.repositories.LocalizacaoRepository;
 import com.ada.economizaapi.repositories.MercadoRepository;
+import com.ada.economizaapi.repositories.ProdutoPrecoRepository;
+import com.ada.economizaapi.repositories.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 @Service
 public class MercadoService extends ServicoAbstrato<Mercado, Long, MercadoRepository> {
 
+    @Autowired
+    private ProdutoRepository produtoRepository;
+
     public MercadoService(MercadoRepository repository) {
         super(repository);
     }
 
     @Autowired
-    private MercadoRepository mercadoRepository;
+    private ProdutoPrecoRepository produtoPrecoRepository;
 
     @Autowired
-    private LocalizacaoRepository localizacaoRepository;
+    private MercadoRepository mercadoRepository;
 
+    // add mercado
     @Override
     public Mercado save(Mercado mercado) {
-        if (mercado.getLocalizacao() != null && mercado.getLocalizacao().getId() == null) {
-            localizacaoRepository.save(mercado.getLocalizacao());
-        }
         return mercadoRepository.save(mercado);
     }
 
+    // adicionar produto ao mercado
+    public Produto addProdutoMercado(Produto produto, Long id, Double preco) throws EntidadeJaExisteException {
+        Mercado mercado = mercadoRepository.findById(id)
+                .orElseThrow(() -> new EntidadeNaoExisteException("Mercado não encontrado"));
+
+        List<Produto> produtos = mercado.getProdutos();
+
+        boolean produtoJaExistente = produtos.stream()
+                .anyMatch(p -> p.getId().equals(produto.getId()));
+
+        if (!produtoJaExistente) {
+            produtos.add(produto);
+            produto.getMercados().add(mercado);
+        }
+        produtoRepository.save(produto);
+
+        ProdutoPreco produtoPreco = new ProdutoPreco(produto, preco, mercado);
+        produtoPrecoRepository.save(produtoPreco);
+
+        mercado.setProdutos(produtos);
+        mercadoRepository.save(mercado);
+
+        return produto;
+    }
+
+
+    // remover produto do mercado
+    public void deleteProduto(Long id, Long idProduto) throws EntidadeNaoExisteException {
+        Mercado mercado = mercadoRepository.findById(id)
+                .orElseThrow(() -> new EntidadeNaoExisteException("Mercado não encontrado"));
+
+        List<Produto> produtos = mercado.getProdutos();
+
+        produtos.removeIf(produto -> produto.getId().equals(idProduto));
+
+        mercado.setProdutos(produtos);
+        mercadoRepository.save(mercado);
+    }
+
+    // editar mercado
     @Override
     public Mercado update(Long id, Mercado mercado) {
         if (!mercadoRepository.existsById(id)) {
-            throw new EntidadeNaoExisteException();
-        }
-        if (mercado.getLocalizacao() != null && mercado.getLocalizacao().getId() == null) {
-            localizacaoRepository.save(mercado.getLocalizacao());
+            throw new EntidadeNaoExisteException("Mercado não encontrado");
         }
 
         Mercado mercadoExistente = this.findById(id)
-                .orElseThrow(EntidadeNaoExisteException::new);
+                .orElseThrow(() -> new EntidadeNaoExisteException("Mercado não encontrado"));
 
-        copyProperties(mercado, mercadoExistente, "id", "localizacao");
+        copyProperties(mercado, mercadoExistente, "id");
 
         if (mercado.getLocalizacao() != null && mercadoExistente.getLocalizacao() != null) {
             copyProperties(mercado.getLocalizacao(), mercadoExistente.getLocalizacao(), "id");

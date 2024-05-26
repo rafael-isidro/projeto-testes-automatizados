@@ -22,22 +22,34 @@ public class Produto {
     private String nome;
     private String marca;
     private String descricao;
-    @ToString.Exclude
+
     @JsonIgnore
-    @OneToMany(mappedBy = "produto")
-    private List<ProdutoPreco> produtoPrecos = new ArrayList<>();
+    @ManyToMany(mappedBy = "listaProdutos")
+    private List<Pessoa> pessoas;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "produtos")
+    private List<Mercado> mercados;
+
+    public Produto(String nome, String marca, String descricao) {
+        this.nome = nome;
+        this.marca = marca;
+        this.descricao = descricao;
+
+        this.pessoas = new ArrayList<>();
+        this.mercados = new ArrayList<>();
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Produto produto = (Produto) o;
-        return Objects.equals(id, produto.id);
+        return Objects.equals(nome, produto.nome) && Objects.equals(marca, produto.marca);
     }
 
     @Override
     public int hashCode() {
-        return id != null ? id.hashCode() : 0;
+        return Objects.hash(nome, marca);
     }
-
 }

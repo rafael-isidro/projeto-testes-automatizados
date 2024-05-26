@@ -10,4 +10,5 @@ public class ProdutoPrecoService extends ServicoAbstrato<ProdutoPreco, Long, Pro
     public ProdutoPrecoService(ProdutoPrecoRepository repository) {
         super(repository);
     }
+
 }
