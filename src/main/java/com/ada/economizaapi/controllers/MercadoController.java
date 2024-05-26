@@ -26,28 +26,24 @@ public class MercadoController {
     @Autowired
     ProdutoPrecoService produtoPrecoService;
 
-    // Get todos os mercados
     @ResponseStatus(HttpStatus.OK)
     @GetMapping()
     public List<Mercado> findAll() {
-            return mercadoService.findAll();
+        return mercadoService.findAll();
     }
 
-    // Get mercado por id
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
     public Optional<Mercado> findById(@PathVariable Long id) {
-            return mercadoService.findById(id);
+        return mercadoService.findById(id);
     }
 
-    // Add mercado
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping()
     public Mercado post(@RequestBody Mercado mercado) {
-            return mercadoService.save(mercado);
+        return mercadoService.save(mercado);
     }
 
-    // Adicionar produtos ao mercado
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{id}/produto")
     public Produto post(@RequestBody ProdutoDTO produto, @PathVariable Long id) {
@@ -61,18 +57,22 @@ public class MercadoController {
         return mercadoService.addProdutoMercado(produtoSalvo, id, preco);
     }
 
-    // Remover mercado
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         mercadoService.deleteById(id);
     }
-    
-    // Remover produto do mercado
+
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}/produto/{id_produto}")
     public void delete(@PathVariable Long id, @PathVariable Long id_produto) {
-            mercadoService.deleteProduto(id, id_produto);
+        mercadoService.deleteProduto(id, id_produto);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/{id}")
+    public Mercado update(@PathVariable Long id, @RequestBody Mercado mercado) {
+        return mercadoService.update(id, mercado);
+    }
 }
+

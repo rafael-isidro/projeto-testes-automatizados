@@ -31,13 +31,11 @@ public class MercadoService extends ServicoAbstrato<Mercado, Long, MercadoReposi
     @Autowired
     private MercadoRepository mercadoRepository;
 
-    // add mercado
     @Override
     public Mercado save(Mercado mercado) {
         return mercadoRepository.save(mercado);
     }
 
-    // adicionar produto ao mercado
     public Produto addProdutoMercado(Produto produto, Long id, Double preco) throws EntidadeJaExisteException {
         Mercado mercado = mercadoRepository.findById(id)
                 .orElseThrow(() -> new EntidadeNaoExisteException("Mercado não encontrado"));
@@ -63,7 +61,6 @@ public class MercadoService extends ServicoAbstrato<Mercado, Long, MercadoReposi
     }
 
 
-    // remover produto do mercado
     public void deleteProduto(Long id, Long idProduto) throws EntidadeNaoExisteException {
         Mercado mercado = mercadoRepository.findById(id)
                 .orElseThrow(() -> new EntidadeNaoExisteException("Mercado não encontrado"));
@@ -76,14 +73,13 @@ public class MercadoService extends ServicoAbstrato<Mercado, Long, MercadoReposi
         mercadoRepository.save(mercado);
     }
 
-    // editar mercado
     @Override
     public Mercado update(Long id, Mercado mercado) {
         if (!mercadoRepository.existsById(id)) {
             throw new EntidadeNaoExisteException("Mercado não encontrado");
         }
 
-        Mercado mercadoExistente = this.findById(id)
+        Mercado mercadoExistente = mercadoRepository.findById(id)
                 .orElseThrow(() -> new EntidadeNaoExisteException("Mercado não encontrado"));
 
         copyProperties(mercado, mercadoExistente, "id");
@@ -94,4 +90,5 @@ public class MercadoService extends ServicoAbstrato<Mercado, Long, MercadoReposi
 
         return mercadoRepository.save(mercadoExistente);
     }
+
 }
