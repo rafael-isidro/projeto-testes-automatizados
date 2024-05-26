@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -25,33 +26,32 @@ class ProdutoServiceTest {
     @Mock
     private ProdutoRepository produtoRepository;
 
+    private Produto produto;
+    private Long produtoId;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        produto = new Produto("Leite integral", "Marca X", "Leite em pó Marca X - 200g");
+        produtoId = 1L;
+        produto.setId(produtoId);
     }
 
     @Test
-    public void deveSalvarProdutoCorretamente() {
-        Long produtoId = 1L;
-        Produto produto = new Produto("Leite integral", "Itambé", "Leite em pó itambé 200g");
-        produto.setId(produtoId);
-
+    void deveSalvarProdutoCorretamente() {
         when(produtoRepository.findByNome(anyString())).thenReturn(Optional.empty());
         when(produtoRepository.save(any(Produto.class))).thenReturn(produto);
-        when(produtoRepository.findById(produtoId)).thenReturn(Optional.of(produto));
 
         Produto produtoSalvo = produtoService.save(produto);
 
-        Optional<Produto> produtoEncontrado = produtoRepository.findById(produtoId);
-        assertTrue(produtoEncontrado.isPresent(), "Produto não encontrado");
-
+        assertNotNull(produtoSalvo);
         assertEquals("Leite integral", produtoSalvo.getNome());
         verify(produtoRepository, times(1)).save(produto);
     }
 
     @Test
-    public void deveRetornarProdutoExistenteAoSalvarProdutoDuplicado() {
-        Produto produto = new Produto("Leite integral", "Itambé", "Leite em pó itambé 200g");
+    void deveRetornarProdutoExistenteAoSalvarProdutoDuplicado() {
         when(produtoRepository.findByNome(anyString())).thenReturn(Optional.of(produto));
 
         EntidadeJaExisteException thrown = assertThrows(EntidadeJaExisteException.class, () -> {

@@ -4,7 +4,6 @@ import com.ada.economizaapi.dtos.ProdutoDTO;
 import com.ada.economizaapi.entities.Mercado;
 import com.ada.economizaapi.entities.Produto;
 import com.ada.economizaapi.services.MercadoService;
-import com.ada.economizaapi.services.ProdutoPrecoService;
 import com.ada.economizaapi.services.ProdutoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;

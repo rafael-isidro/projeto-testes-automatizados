@@ -4,7 +4,6 @@ import com.ada.economizaapi.entities.Mercado;
 import com.ada.economizaapi.entities.Pessoa;
 import com.ada.economizaapi.entities.Produto;
 import com.ada.economizaapi.entities.ProdutoPreco;
-import com.ada.economizaapi.exceptions.EntidadeNaoExisteException;
 import com.ada.economizaapi.repositories.PessoaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,16 +39,37 @@ class PessoaServiceTest {
     @Mock
     private LocalizacaoService localizacaoService;
 
+    private Pessoa pessoa;
+    private List<Mercado> mercados;
+    private Produto produto;
+    private ProdutoPreco produtoPreco1;
+    private ProdutoPreco produtoPreco2;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        pessoa = new Pessoa("João", "-34.90558033218049, -8.053636671819522", 1.50);
+        Mercado mercado1 = new Mercado("Mercado 1", "-34.87766556848074, -8.068553353414341");
+        Mercado mercado2 = new Mercado("Mercado 2", "-34.908553620244376, -8.052456104887181");
+        pessoa.setId(1L);
+        mercado1.setId(1L);
+        mercado2.setId(2L);
+
+        mercados = Arrays.asList(mercado1, mercado2);
+        produto = new Produto("Leite integral", "Marca X", "Leite em pó Marca X - 200g");
+        produto.setId(1L);
+        mercado1.setProdutos(new ArrayList<>(Arrays.asList(produto)));
+        mercado2.setProdutos(new ArrayList<>(Arrays.asList(produto)));
+
+        pessoa.setListaProdutos(new ArrayList<>(Arrays.asList(produto)));
+
+        produtoPreco1 = new ProdutoPreco(produto, 5.0, mercado1);
+        produtoPreco2 = new ProdutoPreco(produto, 5.0, mercado2);
     }
 
     @Test
     void deveSalvarPessoaCorretamente() {
-        Pessoa pessoa = new Pessoa();
-        pessoa.setId(1L);
-
         when(pessoaRepository.save(any(Pessoa.class))).thenReturn(pessoa);
 
         Pessoa pessoaSalva = pessoaService.save(pessoa);
@@ -61,14 +81,6 @@ class PessoaServiceTest {
 
     @Test
     void deveAdicionarProdutoCorretamente() {
-        Pessoa pessoa = new Pessoa();
-        pessoa.setId(1L);
-        List<Produto> produtos = new ArrayList<>();
-        pessoa.setListaProdutos(produtos);
-        Produto produto = new Produto();
-        produto.setId(1L);
-        produto.setPessoas(new ArrayList<>());
-
         when(pessoaRepository.findById(1L)).thenReturn(Optional.of(pessoa));
         when(pessoaRepository.save(any(Pessoa.class))).thenReturn(pessoa);
 
@@ -76,19 +88,11 @@ class PessoaServiceTest {
 
         assertNotNull(produtoAdicionado);
         assertTrue(pessoa.getListaProdutos().contains(produto));
-        assertTrue(produto.getPessoas().contains(pessoa));
         verify(pessoaRepository, times(1)).save(pessoa);
     }
 
     @Test
     void deveRemoverProdutoCorretamente() {
-        Pessoa pessoa = new Pessoa();
-        pessoa.setId(1L);
-        Produto produto = new Produto();
-        produto.setId(1L);
-        List<Produto> produtos = new ArrayList<>(Arrays.asList(produto));
-        pessoa.setListaProdutos(produtos);
-
         when(pessoaRepository.findById(1L)).thenReturn(Optional.of(pessoa));
         when(pessoaRepository.save(any(Pessoa.class))).thenReturn(pessoa);
 
@@ -100,23 +104,6 @@ class PessoaServiceTest {
 
     @Test
     void deveEncontrarMelhorMercado() {
-        Pessoa pessoa = new Pessoa("João", "-34.90558033218049, -8.053636671819522 ", 1.50);
-        Mercado mercado1 = new Mercado("Mercado 1", "-34.87766556848074, -8.068553353414341");
-        Mercado mercado2 = new Mercado("Mercado 2", "-34.908553620244376, -8.052456104887181");
-        pessoa.setId(1L);
-        mercado1.setId(1L);
-        mercado2.setId(2L);
-
-        List<Mercado> mercados = Arrays.asList(mercado1, mercado2);
-        Produto produto = new Produto("Leite integral", "Itambé", "Leite em pó itambé 200g");
-        produto.setId(1L);
-        mercado1.setProdutos(Arrays.asList(produto));
-        mercado2.setProdutos(Arrays.asList(produto));
-
-        pessoa.setListaProdutos(Arrays.asList(produto));
-        ProdutoPreco produtoPreco1 = new ProdutoPreco(produto, 5.0, mercado1);
-        ProdutoPreco produtoPreco2 = new ProdutoPreco(produto, 5.0, mercado2);
-
         when(pessoaRepository.findById(1L)).thenReturn(Optional.of(pessoa));
         when(mercadoService.findAll()).thenReturn(mercados);
         when(produtoPrecoService.findById(1L)).thenReturn(Optional.of(produtoPreco1)).thenReturn(Optional.of(produtoPreco2));

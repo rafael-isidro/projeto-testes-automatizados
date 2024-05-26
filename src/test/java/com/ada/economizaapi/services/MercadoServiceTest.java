@@ -38,14 +38,28 @@ public class MercadoServiceTest {
     @Mock
     private ProdutoPrecoRepository produtoPrecoRepository;
 
+    private Mercado mercado;
+    private Produto produto;
+    private Long mercadoId;
+    private Long produtoId;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        mercado = new Mercado("Menor preço", "-43.477480408176106, -22.870300435370027");
+        produto = new Produto("Leite integral", "Marca X", "Leite em Marca X - 200g");
+
+        mercadoId = 1L;
+        produtoId = 1L;
+
+        mercado.setId(mercadoId);
+        produto.setId(produtoId);
+        mercado.setProdutos(new ArrayList<>(Collections.singletonList(produto)));
     }
 
     @Test
     public void deveCriarMercadoCorretamente() {
-        Mercado mercado = new Mercado();
         when(mercadoRepository.save(any(Mercado.class))).thenReturn(mercado);
 
         Mercado savedMercado = mercadoService.save(mercado);
@@ -56,14 +70,6 @@ public class MercadoServiceTest {
 
     @Test
     public void deveAdicionarProdutoAoMercado() throws EntidadeJaExisteException {
-        Mercado mercado = new Mercado("Menor preço", "-43.477480408176106, -22.870300435370027");
-        Produto produto = new Produto("Leite integral", "Itambé", "Leite em pó itambé 200g");
-
-        Long mercadoId = 1L;
-        Long produtoId = 1L;
-
-        mercado.setId(mercadoId);
-        produto.setId(produtoId);
         Double preco = 10.0;
 
         when(mercadoRepository.findById(mercadoId)).thenReturn(Optional.of(mercado));
@@ -82,17 +88,6 @@ public class MercadoServiceTest {
 
     @Test
     public void deveRemoverProdutoDoMercado() throws EntidadeNaoExisteException {
-
-        Mercado mercado = new Mercado("Menor preço", "-43.477480408176106, -22.870300435370027");
-        Produto produto = new Produto("Leite integral", "Itambé", "Leite em pó itambé 200g");
-
-        Long mercadoId = 1L;
-        Long produtoId = 1L;
-
-        mercado.setId(mercadoId);
-        produto.setId(produtoId);
-        mercado.setProdutos(new ArrayList<>(Collections.singletonList(produto)));
-
         when(mercadoRepository.findById(mercadoId)).thenReturn(Optional.of(mercado));
         mercadoService.deleteProduto(mercadoId, produtoId);
 
@@ -103,11 +98,7 @@ public class MercadoServiceTest {
 
     @Test
     public void deveAtualizarMercado() {
-        Long mercadoId = 1L;
-        Mercado mercadoExistente = new Mercado("Menor preço", "-43.477480408176106, -22.870300435370027");
-        mercadoExistente.setId(mercadoId);
-
-        when(mercadoRepository.findById(mercadoId)).thenReturn(Optional.of(mercadoExistente));
+        when(mercadoRepository.findById(mercadoId)).thenReturn(Optional.of(mercado));
         when(mercadoRepository.existsById(mercadoId)).thenReturn(true);
 
         Mercado mercadoAtualizado = new Mercado("Preço legal", "-43.477480408176106, -22.870300435370027");
@@ -124,7 +115,6 @@ public class MercadoServiceTest {
         verify(mercadoRepository, times(1)).findById(mercadoId);
         verify(mercadoRepository, times(1)).save(any(Mercado.class));
     }
-
 
     @Test
     public void deveLancarExcecaoQuandoMercadoNaoEncontradoParaAtualizar() {
