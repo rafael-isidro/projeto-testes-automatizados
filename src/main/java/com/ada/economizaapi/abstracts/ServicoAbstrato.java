@@ -1,15 +1,12 @@
-package com.ada.economizaapi.services;
+package com.ada.economizaapi.abstracts;
 
 import com.ada.economizaapi.exceptions.EntidadeJaExisteException;
 import com.ada.economizaapi.exceptions.EntidadeNaoExisteException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 

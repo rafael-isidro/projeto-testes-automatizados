@@ -24,7 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-class MercadoServiceTest {
+public class MercadoServiceTest {
 
     @InjectMocks
     private MercadoService mercadoService;

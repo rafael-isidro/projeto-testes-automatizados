@@ -1,11 +1,11 @@
 package com.ada.economizaapi.services;
 
+import com.ada.economizaapi.abstracts.ServicoAbstrato;
 import com.ada.economizaapi.entities.Mercado;
 import com.ada.economizaapi.entities.Pessoa;
 import com.ada.economizaapi.entities.Produto;
 import com.ada.economizaapi.entities.ProdutoPreco;
 import com.ada.economizaapi.exceptions.EntidadeNaoExisteException;
-import com.ada.economizaapi.repositories.LocalizacaoRepository;
 import com.ada.economizaapi.repositories.PessoaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

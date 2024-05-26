@@ -62,4 +62,5 @@ public class LocalizacaoService {
 
         return Mono.error(new IllegalStateException("Não foi possível obter a distância da resposta."));
     }
+
 }

@@ -1,5 +1,6 @@
 package com.ada.economizaapi.services;
 
+import com.ada.economizaapi.abstracts.ServicoAbstrato;
 import com.ada.economizaapi.entities.Mercado;
 import com.ada.economizaapi.entities.Produto;
 import com.ada.economizaapi.entities.ProdutoPreco;
