@@ -52,7 +52,6 @@ class ProdutoServiceTest {
     @Test
     public void deveRetornarProdutoExistenteAoSalvarProdutoDuplicado() {
         Produto produto = new Produto("Leite integral", "Itambé", "Leite em pó itambé 200g");
-        // Simula a existência de um produto duplicado
         when(produtoRepository.findByNome(anyString())).thenReturn(Optional.of(produto));
 
         EntidadeJaExisteException thrown = assertThrows(EntidadeJaExisteException.class, () -> {
